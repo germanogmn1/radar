@@ -1,67 +1,42 @@
-Logger = {
-  log: function (msg) {
-    document.querySelector('#log').innerHTML += msg + "\n";
+/*jslint browser: true, indent: 2*/
+/*globals Map*/
+
+var stubPos = {
+  coords: {
+    latitude: -30.051716,
+    longitude: -51.097310
   }
 };
 
-Map = (function(google) {
-  function Map(targetElement, myPosition) {
-    this.center = this.getPositionLatLnt(myPosition);
-    
-    var mapOptions = {
-      zoom: 17,
-      center: this.center,
-      mapTypeControl: false,
-      navigationControlOptions: {
-        style: google.maps.NavigationControlStyle.ANDROID
-      },
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
-    
-    this.googleMap = new google.maps.Map(targetElement, mapOptions);
-    
-    this.myMarker = new google.maps.Marker({
-      position: this.center,
-      map: this.googleMap,
-      title: "Tu tá aqui!"
-    });
+var Logger = {
+  log: function (msg) {
+    console.log(msg);
+    alert(msg);
   }
-  
-  Map.prototype.setMyPosition = function (position) {
-    Logger.log("setMyPosition");
-    this.center = this.getPositionLatLnt(position);
-    this.myMarker.setPosition(this.getPositionLatLnt(position));
-  };
-  
-  Map.prototype.getPositionLatLnt = function(position) {
-    return new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-  };
-  
-  return Map;
-})(google);
+};
 
-(function (navigator) {
-  Logger.log(window.innerWidth + " x " + window.innerHeight);
-  var positionOptions, initMap, updateMap, error;
+(function () {
+  "use strict";
+  window.map = undefined;
+  var init, canvas;
   
-  positionOptions = {
+  var handle = function (pos) {
+    console.log(pos);
+    
+    if (map) {
+      map.setMyPos(pos);
+    } else {
+      canvas = document.querySelector('#map');
+      map = new Map(canvas, pos);
+    }
+  };
+  
+  var error = function (error) {
+    window.lastError = error;
+    Logger.log(error.message);
+  };
+  
+  navigator.geolocation.watchPosition(handle, error, {
     enableHighAccuracy: true
-    //timeout , maximumAge
-  }
-  
-  initMap = function(position) {
-    var canvas = document.querySelector('#map');
-    window.map = new Map(canvas, position);
-    updateMap();
-  };
-  
-  updateMap = function () {
-    navigator.geolocation.watchPosition(function (p) {
-      window.map.setMyPosition(p);
-    }, error, positionOptions);
-  };
-  
-  error = function(error) { Logger.log(error.message); };
-  
-  navigator.geolocation.getCurrentPosition(initMap, error, positionOptions);
-})(navigator, document);
+  });
+}());

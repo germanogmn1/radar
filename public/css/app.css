@@ -10,14 +10,3 @@ html, body {
   width: 100%;
   height: 100%;
 }
-#log {
-  position: absolute;
-  top: 0;
-  margin: 0;
-  padding: 0;
-  
-  width: 100%;
-  height: 100px;
-  background-color: rgba(255,255,80,0.8);
-  z-index: 1000;
-}
